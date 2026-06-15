@@ -69,7 +69,7 @@ export default function Home() {
         <div style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
 
           {/* NAVBAR */}
-          <nav style={{ width: '100%', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+          <nav className="hide-mobile" style={{ width: '100%', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
             <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '20px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 36, height: 36, background: 'rgba(255,255,255,0.9)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#202A36', fontWeight: 800, fontSize: 18 }}>R</div>
