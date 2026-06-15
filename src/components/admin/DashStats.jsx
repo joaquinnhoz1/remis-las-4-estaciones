@@ -1,5 +1,5 @@
 // Módulo 11 — Estadísticas Avanzadas
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useApp } from '../../context/AppContext'
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -11,31 +11,7 @@ const g = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,25
 
 const TT_STYLE = { background: 'rgba(12,14,22,0.96)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 10, color: '#fff', fontSize: 12 }
 
-// Datos simulados para los últimos 30 días
-const last30 = Array.from({ length: 30 }, (_, i) => {
-  const d = new Date('2026-06-15')
-  d.setDate(d.getDate() - (29 - i))
-  const day = d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })
-  const trips = Math.floor(Math.random() * 18 + 5)
-  const income = trips * (Math.random() * 2000 + 2000)
-  return { day, trips, income: Math.round(income) }
-})
-
-const byHour = Array.from({ length: 24 }, (_, h) => ({
-  hour: `${String(h).padStart(2, '0')}:00`,
-  demand: h >= 7 && h <= 9 ? Math.floor(Math.random() * 8 + 6) :
-          h >= 17 && h <= 19 ? Math.floor(Math.random() * 10 + 8) :
-          h >= 22 || h < 6  ? Math.floor(Math.random() * 3 + 1) :
-          Math.floor(Math.random() * 5 + 2),
-}))
-
-const ZONES = [
-  { name: 'Centro',       value: 38, color: '#60a5fa' },
-  { name: 'Barrio Norte', value: 22, color: '#4ade80' },
-  { name: 'Barrio Sur',   value: 18, color: '#fb923c' },
-  { name: 'Interurbano',  value: 14, color: '#facc15' },
-  { name: 'Otros',        value: 8,  color: '#a78bfa' },
-]
+const ZONE_COLORS = ['#60a5fa', '#4ade80', '#fb923c', '#facc15', '#a78bfa', '#f472b6']
 
 export default function DashStats() {
   const { trips, drivers } = useApp()
@@ -46,6 +22,41 @@ export default function DashStats() {
   const cancelRate = trips.length ? ((cancelled.length / trips.length) * 100).toFixed(1) : 0
   const avgTicket  = completed.length ? Math.round(completed.reduce((s, t) => s + t.price, 0) / completed.length) : 0
   const topDriver  = [...drivers].sort((a, b) => b.monthTrips - a.monthTrips)[0]
+
+  // Serie diaria real (últimos 30 días) a partir de viajes completados
+  const last30 = useMemo(() => {
+    const out = []
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i)
+      const key = d.toISOString().split('T')[0]
+      const dayTrips = completed.filter(t => t.date === key)
+      out.push({
+        day: d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }),
+        trips: dayTrips.length,
+        income: dayTrips.reduce((s, t) => s + (t.price || 0), 0),
+      })
+    }
+    return out
+  }, [completed])
+
+  // Demanda real por hora (a partir de la hora de cada viaje)
+  const byHour = useMemo(() => Array.from({ length: 24 }, (_, h) => ({
+    hour: `${String(h).padStart(2, '0')}:00`,
+    demand: trips.filter(t => parseInt(String(t.time || '').split(':')[0], 10) === h).length,
+  })), [trips])
+
+  // Zonas reales según destino de los viajes completados (top 5 + Otros)
+  const zones = useMemo(() => {
+    const counts = {}
+    completed.forEach(t => { const k = (t.to || 'Otros').trim(); counts[k] = (counts[k] || 0) + 1 })
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
+    const top = sorted.slice(0, 5)
+    const otros = sorted.slice(5).reduce((s, [, v]) => s + v, 0)
+    const total = completed.length || 1
+    const list = top.map(([name, v], i) => ({ name, value: Math.round((v / total) * 100), color: ZONE_COLORS[i] }))
+    if (otros > 0) list.push({ name: 'Otros', value: Math.round((otros / total) * 100), color: ZONE_COLORS[5] })
+    return list
+  }, [completed])
 
   const data = period === '7d' ? last30.slice(-7) : period === '14d' ? last30.slice(-14) : last30
 
@@ -120,22 +131,28 @@ export default function DashStats() {
         {/* ZONAS */}
         <div style={g}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 18 }}>📍 Zonas más utilizadas</h2>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <PieChart width={140} height={140}>
-              <Pie data={ZONES} cx={65} cy={65} innerRadius={40} outerRadius={65} dataKey="value" strokeWidth={0}>
-                {ZONES.map((z, i) => <Cell key={i} fill={z.color} />)}
-              </Pie>
-            </PieChart>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {ZONES.map(z => (
-                <div key={z.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: z.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', flex: 1 }}>{z.name}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{z.value}%</span>
-                </div>
-              ))}
+          {zones.length === 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 140, color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
+              Sin viajes completados todavía
             </div>
-          </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+              <PieChart width={140} height={140}>
+                <Pie data={zones} cx={65} cy={65} innerRadius={40} outerRadius={65} dataKey="value" strokeWidth={0}>
+                  {zones.map((z, i) => <Cell key={i} fill={z.color} />)}
+                </Pie>
+              </PieChart>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {zones.map(z => (
+                  <div key={z.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: z.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{z.name}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{z.value}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

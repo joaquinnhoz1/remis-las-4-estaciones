@@ -1,20 +1,12 @@
 // Módulo 15 — Backups y Seguridad
 import { useState } from 'react'
-import { useApp } from '../../context/AppContext'
+import { useApp, LS_PREFIX } from '../../context/AppContext'
 import useModalA11y from '../../hooks/useModalA11y'
 
 const g = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 22, backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', boxShadow: '0 8px 30px rgba(0,0,0,0.18)' }
 const btn = { padding: '9px 18px', borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.07)', color: '#fff' }
 
-const INITIAL_BACKUPS = [
-  { id: 1, name: 'backup_2026-06-15_02-00.json', size: '148 KB', date: '2026-06-15T02:00:00', type: 'automático', status: 'ok' },
-  { id: 2, name: 'backup_2026-06-14_02-00.json', size: '141 KB', date: '2026-06-14T02:00:00', type: 'automático', status: 'ok' },
-  { id: 3, name: 'backup_2026-06-13_18-32.json', size: '139 KB', date: '2026-06-13T18:32:00', type: 'manual',    status: 'ok' },
-  { id: 4, name: 'backup_2026-06-13_02-00.json', size: '136 KB', date: '2026-06-13T02:00:00', type: 'automático', status: 'ok' },
-  { id: 5, name: 'backup_2026-06-12_02-00.json', size: '130 KB', date: '2026-06-12T02:00:00', type: 'automático', status: 'ok' },
-  { id: 6, name: 'backup_2026-06-11_02-00.json', size: '124 KB', date: '2026-06-11T02:00:00', type: 'automático', status: 'ok' },
-  { id: 7, name: 'backup_2026-06-10_02-00.json', size: '118 KB', date: '2026-06-10T02:00:00', type: 'automático', status: 'ok' },
-]
+const INITIAL_BACKUPS = []
 
 export default function DashBackups() {
   const { trips, drivers, tariffs, destinations, expenses, auditLog } = useApp()
@@ -61,7 +53,7 @@ export default function DashBackups() {
 
   const resetData = () => {
     const keys = ['drivers','trips','tariffs','destinations','expenses','blacklist','auditLog','autoAssignEnabled','autoAssignMode']
-    keys.forEach(k => localStorage.removeItem('remis4e_' + k))
+    keys.forEach(k => localStorage.removeItem(LS_PREFIX + k))
     window.location.reload()
   }
 
@@ -95,7 +87,7 @@ export default function DashBackups() {
           {[
             { l: 'Autenticación de admin',  v: 'Activa',         c: '#4ade80', icon: '🔑' },
             { l: 'Sesiones activas',         v: '1 sesión',       c: '#60a5fa', icon: '🌐' },
-            { l: 'Último backup automático', v: 'Hace 6 horas',  c: '#facc15', icon: '🕐' },
+            { l: 'Último backup automático', v: 'Sin backups aún', c: '#facc15', icon: '🕐' },
             { l: 'Logs de auditoría',        v: `${auditLog.length} registros`, c: '#fb923c', icon: '📋' },
             { l: 'Acceso a panel chofer',    v: 'PIN protegido',  c: '#4ade80', icon: '🚗' },
             { l: 'Datos en localStorage',    v: 'Sin cifrar',     c: '#f87171', icon: '⚠️' },
@@ -136,6 +128,11 @@ export default function DashBackups() {
           <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{backups.length} archivos</span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {backups.length === 0 && (
+            <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>
+              Todavía no hay copias de seguridad. Usá “Crear backup ahora”.
+            </p>
+          )}
           {backups.map(b => (
             <div key={b.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 14px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10 }}>
               <span style={{ fontSize: 18 }}>📄</span>

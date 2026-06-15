@@ -25,11 +25,11 @@ export default function DashHome() {
 
       {/* STAT CARDS */}
       <div className={styles.statsGrid}>
-        <StatCard label="Viajes hoy" value={stats.completedToday} icon="✅" color="green" delta="+12% vs ayer" />
+        <StatCard label="Viajes hoy" value={stats.completedToday} icon="✅" color="green" delta="completados hoy" />
         <StatCard label="En curso" value={stats.activeTrips} icon="🚗" color="yellow" delta="actualizado ahora" />
         <StatCard label="Pendientes" value={stats.pendingTrips} icon="⏳" color="orange" delta="esperando chofer" />
         <StatCard label="Choferes activos" value={stats.activeDrivers} icon="👤" color="blue" delta={`${stats.availableDrivers} disponibles`} />
-        <StatCard label="Ingresos hoy" value={fmt(stats.revenueToday)} icon="💰" color="green" delta="+8% vs ayer" large />
+        <StatCard label="Ingresos hoy" value={fmt(stats.revenueToday)} icon="💰" color="green" delta="del día" large />
         <StatCard label="Ingresos totales" value={fmt(stats.totalRevenue)} icon="📈" color="yellow" delta="histórico" large />
       </div>
 
@@ -154,19 +154,30 @@ function DriverStatusBadge({ status }) {
 }
 
 function RevenueChart() {
-  const data = [12400, 18200, 15800, 22100, 19500, 25800, 9200]
-  const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
-  const max = Math.max(...data)
+  const { trips } = useApp()
+
+  // Ingresos reales de los últimos 7 días (viajes completados)
+  const series = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i)
+    const key = d.toISOString().split('T')[0]
+    const val = trips
+      .filter(t => t.status === 'completado' && t.date === key)
+      .reduce((s, t) => s + (t.price || 0), 0)
+    series.push({ val, label: d.toLocaleDateString('es-AR', { weekday: 'short' }).replace('.', '') })
+  }
+  const max = Math.max(...series.map(s => s.val), 1)
+  const todayIdx = series.length - 1
 
   return (
     <div className={styles.chart}>
-      {data.map((val, i) => (
+      {series.map((s, i) => (
         <div key={i} className={styles.chartBar}>
           <div
             className={styles.chartBarFill}
-            style={{ height: `${(val / max) * 160}px`, background: i === 5 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.08)' }}
+            style={{ height: `${(s.val / max) * 160}px`, background: i === todayIdx ? 'rgba(129,140,248,0.85)' : 'rgba(255,255,255,0.10)' }}
           />
-          <div className={styles.chartDay}>{days[i]}</div>
+          <div className={styles.chartDay} style={{ textTransform: 'capitalize' }}>{s.label}</div>
         </div>
       ))}
     </div>

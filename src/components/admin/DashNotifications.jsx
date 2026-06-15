@@ -34,11 +34,7 @@ export default function DashNotifications() {
   const [selectedTrip, setSelectedTrip] = useState('')
   const [templateKey, setTemplateKey]   = useState('confirmacion')
   const [preview, setPreview]           = useState('')
-  const [log, setLog]                   = useState([
-    { id: 1, to: 'María García', phone: '2993001122', type: 'confirmacion', ts: new Date(Date.now() - 3600000).toISOString(), status: 'enviado' },
-    { id: 2, to: 'Juan Rodríguez', phone: '2993445566', type: 'camino', ts: new Date(Date.now() - 1800000).toISOString(), status: 'enviado' },
-    { id: 3, to: 'Ana López', phone: '2993778899', type: 'completado', ts: new Date(Date.now() - 900000).toISOString(), status: 'enviado' },
-  ])
+  const [log, setLog]                   = useState([])
 
   const activeTrips = trips.filter(t => !['completado', 'cancelado'].includes(t.status))
 
@@ -137,6 +133,9 @@ export default function DashNotifications() {
       <div style={g}>
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 16 }}>📋 Historial de mensajes</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {log.length === 0 && (
+            <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>Sin mensajes enviados todavía.</p>
+          )}
           {log.map(entry => {
             const tl = TEMPLATE_LABELS[entry.type] || { l: entry.type, c: '#fff', icon: '📩' }
             return (
