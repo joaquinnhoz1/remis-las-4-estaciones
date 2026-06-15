@@ -1,0 +1,145 @@
+.page { display: flex; flex-direction: column; gap: 24px; }
+
+.header { display: flex; align-items: flex-start; justify-content: space-between; }
+.title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+.subtitle { color: rgba(255,255,255,0.3); font-size: 13px; margin-top: 4px; }
+
+.liveBadge {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(74,222,128,0.08);
+  border: 1px solid rgba(74,222,128,0.2);
+  color: #4ade80; padding: 7px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+}
+
+.liveDot {
+  width: 7px; height: 7px; background: #4ade80; border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* STATS */
+.statsGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+
+.statCard {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; padding: 22px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: border-color 0.2s;
+}
+.statCard:hover { border-color: rgba(255,255,255,0.14); }
+
+.statLarge {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.statIcon {
+  font-size: 24px; width: 48px; height: 48px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.icon_green  { background: rgba(74,222,128,0.10); }
+.icon_yellow { background: rgba(250,204,21,0.10); }
+.icon_orange { background: rgba(251,146,60,0.10); }
+.icon_blue   { background: rgba(96,165,250,0.10); }
+
+.statLarge .statIcon { font-size: 32px; width: 58px; height: 58px; }
+
+.statValue { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; color: #fff; }
+.statLarge .statValue { font-size: 32px; }
+
+.statLabel { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 500; }
+.statDelta  { font-size: 11px; color: rgba(255,255,255,0.2); }
+
+/* GRID 2 */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; padding: 22px;
+}
+
+.cardHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.cardTitle  { font-size: 15px; font-weight: 700; color: #fff; }
+
+.cardBadge {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.3); padding: 3px 10px;
+  border-radius: 999px; font-size: 11px;
+}
+
+/* TRIP LIST */
+.tripList { display: flex; flex-direction: column; gap: 10px; }
+
+.tripRow {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+
+.tripId {
+  font-family: monospace; font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 7px; border-radius: 5px; flex-shrink: 0;
+}
+
+.tripInfo { flex: 1; min-width: 0; }
+
+.tripCustomer { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tripRoute    { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.tripRight { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.tripPrice { font-size: 13px; font-weight: 700; color: #fff; }
+
+/* DRIVER LIST */
+.driverList { display: flex; flex-direction: column; gap: 10px; }
+
+.driverRow {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+
+.driverAvatar {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); flex-shrink: 0;
+}
+
+.driverInfo { flex: 1; min-width: 0; }
+.driverName { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.driverCar  { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+
+.driverRight { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.driverRating { font-size: 12px; color: #facc15; font-weight: 600; }
+
+/* CHART */
+.chart { display: flex; align-items: flex-end; gap: 10px; height: 180px; padding-top: 16px; }
+
+.chartBar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: flex-end; height: 100%; }
+
+.chartBarFill { width: 100%; border-radius: 6px 6px 0 0; transition: height 0.5s ease; min-height: 4px; }
+
+.chartDay { font-size: 11px; color: rgba(255,255,255,0.25); font-weight: 500; }
+
+@media (max-width: 1200px) {
+  .statsGrid { grid-template-columns: 1fr 1fr; }
+  .statLarge { grid-column: span 1; }
+}
+@media (max-width: 900px) {
+  .grid2 { grid-template-columns: 1fr; }
+}
