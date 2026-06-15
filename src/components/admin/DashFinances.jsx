@@ -4,7 +4,7 @@ import useModalA11y from '../../hooks/useModalA11y'
 
 const fmt = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
-const g = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 22 }
+const g = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 22, backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', boxShadow: '0 8px 30px rgba(0,0,0,0.18)' }
 const CATS = ['Combustible', 'Taller', 'Seguro', 'Lavado', 'Peaje', 'VTV', 'Otro']
 const CAT_ICON = { Combustible: '⛽', Taller: '🔧', Seguro: '🛡️', Lavado: '🚿', Peaje: '🛣️', VTV: '📋', Otro: '📌' }
 

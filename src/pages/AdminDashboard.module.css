@@ -1,14 +1,44 @@
 .layout {
   display: flex;
   min-height: 100vh;
-  background: #080a10;
+  position: relative;
+  isolation: isolate;
   font-family: 'Inter', system-ui, sans-serif;
+  background-color: #161b2e;
+  background-image:
+    radial-gradient(820px circle at 8% -10%,  rgba(99,102,241,0.30), transparent 45%),
+    radial-gradient(720px circle at 100% 6%,  rgba(45,212,191,0.18), transparent 42%),
+    radial-gradient(900px circle at 70% 115%, rgba(168,85,247,0.22), transparent 50%),
+    linear-gradient(165deg, #1a2038 0%, #141828 55%, #11131f 100%);
+  background-attachment: fixed;
+}
+
+/* Capa aurora animada con desplazamiento muy suave */
+.layout::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 40% at 20% 30%, rgba(129,140,248,0.18), transparent 60%),
+    radial-gradient(35% 35% at 80% 70%, rgba(45,212,191,0.14), transparent 60%);
+  filter: blur(20px);
+  animation: auroraDrift 26s ease-in-out infinite alternate;
+}
+
+@keyframes auroraDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(2%, -3%, 0) scale(1.08); }
 }
 
 /* ── SIDEBAR ─────────────────────────────────────────────── */
 .sidebar {
-  background: rgba(12, 14, 22, 0.98);
-  border-right: 1px solid rgba(255,255,255,0.07);
+  background: rgba(23, 28, 48, 0.55);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border-right: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 1px 0 0 rgba(255,255,255,0.04) inset;
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease, transform 0.3s ease;
@@ -28,7 +58,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 
@@ -40,13 +70,14 @@
 }
 
 .logoIcon {
-  width: 32px; height: 32px;
-  background: #fff;
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #2dd4bf 100%);
   color: #0f1119;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   font-weight: 900; font-size: 16px;
   flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(129,140,248,0.45);
 }
 
 .logoText {
@@ -58,21 +89,21 @@
 }
 
 .toggleBtn {
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.3);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
   width: 28px; height: 28px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; flex-shrink: 0; cursor: pointer;
   transition: all 0.2s;
 }
-.toggleBtn:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+.toggleBtn:hover { color: #fff; border-color: rgba(129,140,248,0.5); background: rgba(129,140,248,0.12); }
 
 /* ── SIDEBAR META ────────────────────────────────────────── */
 .sidebarMeta {
   padding: 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 
@@ -80,33 +111,41 @@
 
 .adminAvatar {
   width: 36px; height: 36px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(135deg, rgba(129,140,248,0.35), rgba(167,139,250,0.25));
+  border: 1px solid rgba(255,255,255,0.18);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: 15px; color: #fff; flex-shrink: 0;
 }
 
 .adminName { font-size: 13px; font-weight: 600; color: #fff; }
-.adminRole { font-size: 11px; color: rgba(255,255,255,0.3); }
+.adminRole { font-size: 11px; color: rgba(255,255,255,0.4); }
 
 /* ── NAV ─────────────────────────────────────────────────── */
-.nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav { flex: 1; padding: 12px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
 
 .navItem {
   display: flex; align-items: center; gap: 12px;
-  padding: 11px 16px;
-  color: rgba(255,255,255,0.4);
+  padding: 10px 12px;
+  color: rgba(255,255,255,0.5);
   font-size: 13.5px; font-weight: 500;
-  transition: all 0.15s; white-space: nowrap;
-  text-decoration: none; border-left: 2px solid transparent;
+  transition: all 0.18s; white-space: nowrap;
+  text-decoration: none; border-radius: 10px;
+  position: relative;
 }
-.navItem:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+.navItem:hover { color: #fff; background: rgba(255,255,255,0.06); }
 
 .navItem.active {
   color: #fff;
-  background: rgba(255,255,255,0.07);
-  border-left-color: #fff;
+  background: linear-gradient(90deg, rgba(129,140,248,0.22), rgba(167,139,250,0.10));
+  box-shadow: inset 0 0 0 1px rgba(129,140,248,0.30);
+}
+.navItem.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #818cf8, #2dd4bf);
 }
 
 .navIcon { font-size: 17px; flex-shrink: 0; }
@@ -115,49 +154,50 @@
 /* ── LIVE STATUS ─────────────────────────────────────────── */
 .sidebarLive {
   margin: 12px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
   padding: 14px;
   display: flex; flex-direction: column; gap: 10px;
   flex-shrink: 0;
+  backdrop-filter: blur(10px);
 }
 
 .liveTitle {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.8px; color: rgba(255,255,255,0.25); margin-bottom: 4px;
+  letter-spacing: 0.8px; color: rgba(255,255,255,0.35); margin-bottom: 4px;
 }
 
 .liveRow {
   display: flex; align-items: center; gap: 8px;
-  font-size: 12.5px; color: rgba(255,255,255,0.45);
+  font-size: 12.5px; color: rgba(255,255,255,0.55);
 }
 
 .dot    { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.green  { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
-.yellow { background: #facc15; box-shadow: 0 0 6px #facc15; }
-.red    { background: #f87171; box-shadow: 0 0 6px #f87171; }
+.green  { background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+.yellow { background: #facc15; box-shadow: 0 0 8px #facc15; }
+.red    { background: #f87171; box-shadow: 0 0 8px #f87171; }
 
 .logoutBtn {
   display: flex; align-items: center; gap: 10px;
   padding: 16px;
-  background: transparent; color: rgba(255,255,255,0.25);
-  font-size: 13px; border-top: 1px solid rgba(255,255,255,0.06);
+  background: transparent; color: rgba(255,255,255,0.35);
+  font-size: 13px; border-top: 1px solid rgba(255,255,255,0.08);
   transition: all 0.2s; white-space: nowrap;
   border-left: none; border-right: none; border-bottom: none;
   cursor: pointer; font-family: inherit;
   flex-shrink: 0;
 }
-.logoutBtn:hover { color: #f87171; background: rgba(248,113,113,0.05); }
+.logoutBtn:hover { color: #f87171; background: rgba(248,113,113,0.08); }
 
 /* ── OVERLAY (mobile) ────────────────────────────────────── */
 .overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(10,12,22,0.5);
   z-index: 150;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
 }
 
 /* ── MAIN ────────────────────────────────────────────────── */
@@ -174,10 +214,10 @@
 
 /* ── TOPBAR ──────────────────────────────────────────────── */
 .topbar {
-  background: rgba(12, 14, 22, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(22, 27, 46, 0.45);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   padding: 0 24px; height: 56px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
@@ -188,9 +228,9 @@
 .topbarRight { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 .menuBtn {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.75);
   font-size: 18px;
   width: 36px; height: 36px;
   border-radius: 9px;
@@ -201,21 +241,21 @@
 
 .breadcrumb {
   font-size: 13px;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.4);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .homeBtn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.09);
-  color: rgba(255,255,255,0.45);
-  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.55);
+  padding: 7px 14px; border-radius: 9px; font-size: 12px; font-weight: 500;
   transition: all 0.2s; cursor: pointer; font-family: inherit;
   white-space: nowrap;
 }
-.homeBtn:hover { color: #fff; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); }
+.homeBtn:hover { color: #fff; border-color: rgba(129,140,248,0.5); background: rgba(129,140,248,0.14); }
 
 /* ── CONTENT ─────────────────────────────────────────────── */
 .content {
@@ -228,43 +268,34 @@
 /* ── MOBILE ≤ 768px ──────────────────────────────────────── */
 @media (max-width: 768px) {
 
-  /* Sidebar se oculta fuera de pantalla por defecto */
   .sidebar {
     transform: translateX(-100%);
     width: 280px !important;
-    box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+    background: rgba(20, 24, 42, 0.85);
+    box-shadow: 4px 0 40px rgba(0,0,0,0.45);
   }
 
-  /* Cuando está abierto en mobile: entra desde la izquierda */
   .sidebarMobileOpen {
     transform: translateX(0) !important;
   }
 
-  /* Overlay visible cuando sidebar está abierto */
   .overlayVisible {
     display: block;
   }
 
-  /* Main ocupa todo el ancho — el sidebar es overlay */
   .main         { margin-left: 0 !important; }
   .mainCollapsed{ margin-left: 0 !important; }
 
-  /* Mostrar el botón hamburguesa */
   .menuBtn { display: flex; }
 
-  /* Ocultar el botón toggle de colapsar sidebar (solo desktop) */
   .toggleBtn { display: none; }
 
-  /* Topbar más compacta */
   .topbar { padding: 0 16px; height: 52px; }
 
-  /* Ocultar botón "Portal Chofer" en mobile, dejar solo "Ver sitio" */
   .homeBtnSecondary { display: none; }
 
-  /* Contenido con menos padding */
   .content { padding: 16px; }
 
-  /* Breadcrumb más corto */
   .breadcrumb { font-size: 12px; max-width: 120px; }
 }
 
