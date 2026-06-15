@@ -190,7 +190,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ NOSOTROS ══════════════ */}
-      <section id="nosotros" style={sectionStyle('#fff')}>
+      <section id="nosotros" className="hide-mobile" style={sectionStyle('#fff')}>
         <div style={containerStyle}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 60, alignItems: 'center' }}>
             <div>
@@ -222,7 +222,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ TARIFAS ══════════════ */}
-      <section id="tarifas" style={sectionStyle('#f9fafb')}>
+      <section id="tarifas" className="hide-mobile" style={sectionStyle('#f9fafb')}>
         <div style={containerStyle}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <Tag>Tarifas</Tag>
@@ -251,7 +251,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ BENEFICIOS ══════════════ */}
-      <section id="beneficios" style={sectionStyle('#202A36')}>
+      <section id="beneficios" className="hide-mobile" style={sectionStyle('#202A36')}>
         <div style={containerStyle}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <Tag light>Beneficios</Tag>
@@ -271,7 +271,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ RESEÑAS ══════════════ */}
-      <section style={sectionStyle('#fff')}>
+      <section className="hide-mobile" style={sectionStyle('#fff')}>
         <div style={containerStyle}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <Tag>Opiniones</Tag>
@@ -290,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ FAQ ══════════════ */}
-      <section id="faq" style={sectionStyle('#f9fafb')}>
+      <section id="faq" className="hide-mobile" style={sectionStyle('#f9fafb')}>
         <div style={{ ...containerStyle, maxWidth: 720 }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <Tag>FAQ</Tag>
@@ -318,7 +318,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ CTA ══════════════ */}
-      <section style={{ ...sectionStyle('#202A36'), padding: '80px 24px' }}>
+      <section className="hide-mobile" style={{ ...sectionStyle('#202A36'), padding: '80px 24px' }}>
         <div style={{ textAlign: 'center' }}>
           <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, color: '#fff', letterSpacing: '-1px', marginBottom: 16 }}>
             ¿Necesitás un remis ahora?
@@ -341,7 +341,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ FOOTER ══════════════ */}
-      <footer style={{ background: '#111827', padding: '40px 32px' }}>
+      <footer className="hide-mobile" style={{ background: '#111827', padding: '40px 32px' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 32, height: 32, background: '#fff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#202A36', fontWeight: 800, fontSize: 16 }}>R</div>
@@ -368,6 +368,7 @@ export default function Home() {
         @media (max-width: 767px) {
           .mobile-menu-btn { display: flex !important; }
           .desktop-nav { display: none !important; }
+          .hide-mobile { display: none !important; }
         }
       `}</style>
     </div>
