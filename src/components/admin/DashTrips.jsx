@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import useModalA11y from '../../hooks/useModalA11y'
 import styles from './DashTrips.module.css'
 
 const fmt = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
@@ -35,6 +36,7 @@ export default function DashTrips() {
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState(null)
   const [assignId, setAssignId] = useState('')
+  useModalA11y(() => { setSelected(null); setAssignId('') }, !!selected)
 
   const activeFilters = ['todos', 'pendiente', 'asignado', 'en_curso', 'completado', 'cancelado']
 
@@ -125,7 +127,7 @@ export default function DashTrips() {
 
       {selected && (
         <div className={styles.modalOverlay} onClick={() => setSelected(null)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={`Asignar chofer al viaje ${selected.id}`}>
             <h3 className={styles.modalTitle}>Asignar chofer — {selected.id}</h3>
             <div className={styles.modalRoute}>
               <span>{selected.from}</span><span> → </span><span>{selected.to}</span>

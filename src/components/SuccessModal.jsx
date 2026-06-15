@@ -1,4 +1,5 @@
 import { useApp } from '../context/AppContext'
+import useModalA11y from '../hooks/useModalA11y'
 
 const glass = {
   background: 'rgba(15, 17, 25, 0.88)',
@@ -9,6 +10,7 @@ const glass = {
 
 export default function SuccessModal() {
   const { bookingSuccess, setBookingSuccess } = useApp()
+  useModalA11y(() => setBookingSuccess(null))
   if (!bookingSuccess) return null
 
   return (
@@ -24,6 +26,9 @@ export default function SuccessModal() {
     >
       <div
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Reserva confirmada"
         style={{
           ...glass,
           borderRadius: 24, padding: '40px 32px',

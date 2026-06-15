@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
+import useModalA11y from '../../hooks/useModalA11y'
 import styles from './DashDrivers.module.css'
 
 function StatusDot({ status }) {
@@ -13,6 +14,8 @@ export default function DashDrivers() {
   const [form, setForm] = useState({ name: '', phone: '', car: '', plate: '', pin: '' })
   const [search, setSearch] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(null)
+  const [formError, setFormError] = useState('')
+  useModalA11y(() => { setShowAdd(false); setConfirmDelete(null); setFormError('') }, showAdd || !!confirmDelete)
 
   const filtered = drivers.filter(d => {
     const q = search.toLowerCase()
@@ -21,11 +24,22 @@ export default function DashDrivers() {
 
   const handleAdd = (e) => {
     e.preventDefault()
-    if (form.name && form.phone && form.car && form.plate && form.pin.length === 4) {
-      addDriver(form)
-      setForm({ name: '', phone: '', car: '', plate: '', pin: '' })
-      setShowAdd(false)
+    setFormError('')
+    if (!(form.name && form.phone && form.car && form.plate)) {
+      setFormError('Completá todos los campos.')
+      return
     }
+    if (!/^\d{4}$/.test(form.pin)) {
+      setFormError('El PIN debe tener exactamente 4 dígitos.')
+      return
+    }
+    if (drivers.some(d => d.pin === form.pin)) {
+      setFormError('Ese PIN ya está en uso por otro chofer. Elegí otro.')
+      return
+    }
+    addDriver(form)
+    setForm({ name: '', phone: '', car: '', plate: '', pin: '' })
+    setShowAdd(false)
   }
 
   return (
@@ -35,7 +49,7 @@ export default function DashDrivers() {
           <h1 className={styles.title}>Choferes</h1>
           <p className={styles.sub}>{drivers.length} choferes registrados · {drivers.filter(d => d.status === 'disponible').length} disponibles ahora</p>
         </div>
-        <button className={styles.btnAdd} onClick={() => setShowAdd(true)}>+ Agregar chofer</button>
+        <button className={styles.btnAdd} onClick={() => { setShowAdd(true); setFormError('') }}>+ Agregar chofer</button>
       </div>
 
       <div className={styles.searchWrap}>
@@ -108,8 +122,8 @@ export default function DashDrivers() {
 
       {/* ADD MODAL */}
       {showAdd && (
-        <div className={styles.overlay} onClick={() => setShowAdd(false)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div className={styles.overlay} onClick={() => { setShowAdd(false); setFormError('') }}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Agregar nuevo chofer">
             <h3 className={styles.modalTitle}>Agregar nuevo chofer</h3>
             <form onSubmit={handleAdd} className={styles.form}>
               {[
@@ -132,8 +146,13 @@ export default function DashDrivers() {
                   />
                 </div>
               ))}
+              {formError && (
+                <div style={{ color: '#f87171', fontSize: 12.5, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 8, padding: '8px 12px' }}>
+                  {formError}
+                </div>
+              )}
               <div className={styles.modalActions}>
-                <button type="button" className={styles.btnCancelModal} onClick={() => setShowAdd(false)}>Cancelar</button>
+                <button type="button" className={styles.btnCancelModal} onClick={() => { setShowAdd(false); setFormError('') }}>Cancelar</button>
                 <button type="submit" className={styles.btnSave}>Guardar chofer</button>
               </div>
             </form>
@@ -144,7 +163,7 @@ export default function DashDrivers() {
       {/* CONFIRM DELETE */}
       {confirmDelete && (
         <div className={styles.overlay} onClick={() => setConfirmDelete(null)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Confirmar eliminación de chofer">
             <h3 className={styles.modalTitle}>¿Eliminar chofer?</h3>
             <p className={styles.confirmText}>
               Estás por eliminar a <strong>{confirmDelete.name}</strong>. Esta acción no se puede deshacer.

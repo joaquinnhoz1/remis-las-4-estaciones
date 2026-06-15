@@ -44,6 +44,10 @@ export default function Home() {
   const { bookingSuccess } = useApp()
   const navigate = useNavigate()
 
+  // No autoreproducir el video si el usuario prefiere movimiento reducido (A11Y-5)
+  const reducedMotion = typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
     setMobileOpen(false)
@@ -55,11 +59,14 @@ export default function Home() {
       {/* ══════════════ HERO ══════════════ */}
       <section id="inicio" style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
 
-        {/* VIDEO */}
+        {/* VIDEO (decorativo) */}
         <video
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
           src="/hero.mp4"
-          autoPlay muted loop playsInline
+          autoPlay={!reducedMotion}
+          muted loop playsInline
+          preload="metadata"
+          aria-hidden="true"
         />
 
         {/* OVERLAY */}

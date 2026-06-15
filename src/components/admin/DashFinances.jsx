@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
+import useModalA11y from '../../hooks/useModalA11y'
 
 const fmt = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
@@ -10,6 +11,7 @@ const CAT_ICON = { Combustible: '⛽', Taller: '🔧', Seguro: '🛡️', Lavado
 export default function DashFinances() {
   const { trips, expenses, addExpense, removeExpense } = useApp()
   const [showForm, setShowForm] = useState(false)
+  useModalA11y(() => setShowForm(false), showForm)
   const [filter, setFilter] = useState('all')
   const [form, setForm] = useState({ category: 'Combustible', description: '', amount: '', vehicle: '', date: new Date().toISOString().split('T')[0] })
 
@@ -25,7 +27,7 @@ export default function DashFinances() {
   const filtered = filter === 'all' ? expenses : expenses.filter(e => e.category === filter)
 
   const handleAdd = () => {
-    if (!form.description || !form.amount) return
+    if (!form.description || !(Number(form.amount) > 0)) return
     addExpense({ ...form, amount: Number(form.amount) })
     setForm({ category: 'Combustible', description: '', amount: '', vehicle: '', date: new Date().toISOString().split('T')[0] })
     setShowForm(false)
@@ -135,12 +137,12 @@ export default function DashFinances() {
       {/* MODAL AGREGAR GASTO */}
       {showForm && (
         <div onClick={() => setShowForm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: 24 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(12,14,22,0.97)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 14, fontFamily: 'inherit' }}>
+          <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Registrar gasto" style={{ background: 'rgba(12,14,22,0.97)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 14, fontFamily: 'inherit' }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0 }}>Registrar gasto</h3>
             {[
               { l: 'Categoría', el: <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} style={sel}>{CATS.map(c => <option key={c}>{c}</option>)}</select> },
               { l: 'Descripción', el: <input value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Ej: Nafta 20L Toyota Corolla" style={inp} /> },
-              { l: 'Monto ($)', el: <input type="number" value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))} placeholder="0" style={inp} /> },
+              { l: 'Monto ($)', el: <input type="number" min="0" value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))} placeholder="0" style={inp} /> },
               { l: 'Vehículo (patente)', el: <input value={form.vehicle} onChange={e => setForm(p => ({ ...p, vehicle: e.target.value }))} placeholder="Ej: AB123CD" style={inp} /> },
               { l: 'Fecha', el: <input type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} style={inp} /> },
             ].map(f => (

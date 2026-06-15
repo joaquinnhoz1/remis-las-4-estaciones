@@ -1,6 +1,7 @@
 // Módulo 15 — Backups y Seguridad
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
+import useModalA11y from '../../hooks/useModalA11y'
 
 const g = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 22 }
 const btn = { padding: '9px 18px', borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.07)', color: '#fff' }
@@ -20,6 +21,7 @@ export default function DashBackups() {
   const [backups, setBackups]   = useState(INITIAL_BACKUPS)
   const [restoring, setRestoring] = useState(null)
   const [msg, setMsg]           = useState('')
+  useModalA11y(() => setRestoring(null), !!restoring)
 
   const createBackup = () => {
     const data = { trips, drivers, tariffs, destinations, expenses, auditLog, createdAt: new Date().toISOString(), version: '1.0' }
@@ -156,7 +158,7 @@ export default function DashBackups() {
       {/* MODAL RESTAURAR */}
       {restoring && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setRestoring(null)}>
-          <div style={{ background: '#0f1119', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 32, maxWidth: 420, width: '90%' }} onClick={e => e.stopPropagation()}>
+          <div style={{ background: '#0f1119', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 32, maxWidth: 420, width: '90%' }} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Confirmar restauración">
             <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
             <h3 style={{ color: '#fff', fontSize: 18, fontWeight: 800, margin: '0 0 10px' }}>Confirmar restauración</h3>
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.6 }}>

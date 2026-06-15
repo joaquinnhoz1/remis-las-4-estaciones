@@ -1,6 +1,6 @@
 // Módulo 9 — Dashboard con mapa en vivo
 import { useState, useEffect, useRef } from 'react'
-import { useApp } from '../../context/AppContext'
+import { useApp, escapeHtml } from '../../context/AppContext'
 
 const DAIREAUX = { lat: -36.5996, lng: -61.7517 }
 const g = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 22 }
@@ -64,14 +64,14 @@ export default function DashMap() {
           const pos = DRIVER_POSITIONS[i % DRIVER_POSITIONS.length]
           const color = STATUS_COLOR[d.status] || '#6b7280'
           const icon = L.divIcon({
-            html: `<div style="background:${color};width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid rgba(255,255,255,0.8);box-shadow:0 0 12px ${color}80;cursor:pointer;">${d.avatar}</div>`,
+            html: `<div style="background:${color};width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid rgba(255,255,255,0.8);box-shadow:0 0 12px ${color}80;cursor:pointer;">${escapeHtml(d.avatar)}</div>`,
             className: '',
             iconSize: [30, 30],
             iconAnchor: [15, 15],
           })
           const m = L.marker([pos.lat, pos.lng], { icon })
             .addTo(map)
-            .bindPopup(`<div style="font-family:Inter,sans-serif;min-width:150px"><strong>${d.name}</strong><br/><span style="color:${color}">● ${STATUS_LABEL[d.status]}</span><br/>${d.car} · ${d.plate}<br/>⭐ ${d.rating} · ${d.monthTrips} viajes este mes</div>`)
+            .bindPopup(`<div style="font-family:Inter,sans-serif;min-width:150px"><strong>${escapeHtml(d.name)}</strong><br/><span style="color:${color}">● ${escapeHtml(STATUS_LABEL[d.status] || d.status)}</span><br/>${escapeHtml(d.car)} · ${escapeHtml(d.plate)}<br/>⭐ ${escapeHtml(d.rating)} · ${escapeHtml(d.monthTrips)} viajes este mes</div>`)
           markersRef.current.push(m)
         })
 
@@ -143,7 +143,6 @@ export default function DashMap() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
         {/* MAPA */}
         <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', position: 'relative', minHeight: 460 }}>
-          <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
           <div ref={mapRef} style={{ width: '100%', height: '100%', minHeight: 460, background: '#080a10' }} />
           {!mapReady && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(8,10,16,0.8)', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>

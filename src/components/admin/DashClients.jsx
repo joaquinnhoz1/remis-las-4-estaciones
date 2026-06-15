@@ -12,19 +12,20 @@ const LABEL_COLORS = {
 }
 
 export default function DashClients() {
-  const { clients, trips, blacklist, blockClient, unblockClient } = useApp()
+  const { clients, trips, blacklist, blockClient, unblockClient, isPhoneBlocked } = useApp()
+  const onlyDigits = (p) => String(p || '').replace(/\D/g, '')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState(null)
   const [blockReason, setBlockReason] = useState('')
   const [tab, setTab] = useState('clients')
 
-  const clientsWithStatus = clients.map(c => ({ ...c, isBlocked: blacklist.some(b => b.phone === c.phone) }))
+  const clientsWithStatus = clients.map(c => ({ ...c, isBlocked: isPhoneBlocked(c.phone) }))
   const filtered = clientsWithStatus.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) || c.phone.includes(search)
   )
 
   const selectedTrips = selected ? trips.filter(t => t.phone === selected.phone) : []
-  const blockEntry = selected ? blacklist.find(b => b.phone === selected.phone) : null
+  const blockEntry = selected ? blacklist.find(b => (b.phoneKey || onlyDigits(b.phone)) === onlyDigits(selected.phone)) : null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>

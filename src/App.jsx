@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import DriverLogin from './pages/DriverLogin'
 import DriverDashboard from './pages/DriverDashboard'
 import TrackingPage from './pages/TrackingPage'
+import NotFound from './pages/NotFound'
 
 function ProtectedRoute({ children }) {
   const { adminAuth } = useApp()
@@ -35,6 +36,7 @@ function AppRoutes() {
         </DriverProtectedRoute>
       } />
       <Route path="/seguimiento/:id" element={<TrackingPage />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }

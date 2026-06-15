@@ -1,7 +1,7 @@
 // Módulo 5 — Seguimiento en tiempo real
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
+import { useApp, escapeHtml } from '../context/AppContext'
 
 const DAIREAUX = { lat: -36.5996, lng: -61.7517 }
 const TRIP_STATE_LABELS = {
@@ -55,7 +55,7 @@ export default function TrackingPage() {
       // Marcador del chofer (animado)
       if (driver && ['chofer_camino', 'chofer_llego', 'a_bordo', 'en_curso'].includes(trip.status)) {
         const icon = L.divIcon({
-          html: `<div style="background:#fb923c;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #fff;box-shadow:0 0 16px rgba(251,146,60,0.6);">${driver.avatar}</div>`,
+          html: `<div style="background:#fb923c;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #fff;box-shadow:0 0 16px rgba(251,146,60,0.6);">${escapeHtml(driver.avatar)}</div>`,
           className: '', iconSize: [36, 36], iconAnchor: [18, 18],
         })
         const startLat = DAIREAUX.lat + (Math.random() - 0.5) * 0.012
@@ -90,7 +90,6 @@ export default function TrackingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#080a10', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
       {/* HEADER */}
       <header style={{ background: 'rgba(12,14,22,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 20px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>

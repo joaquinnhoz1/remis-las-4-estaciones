@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import { X, Phone } from 'lucide-react'
+import useModalA11y from '../hooks/useModalA11y'
 
 const fmt = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
@@ -29,7 +30,8 @@ function estimateDistance(from, to) {
 const NOW_OPT = 'now'
 
 export default function BookingModal({ onClose }) {
-  const { addTrip, calcPrice, destinations, lookupClient, blacklist, tariffs } = useApp()
+  useModalA11y(onClose)
+  const { addTrip, calcPrice, destinations, lookupClient, isPhoneBlocked, tariffs } = useApp()
   const [step, setStep] = useState(1)
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
@@ -39,6 +41,7 @@ export default function BookingModal({ onClose }) {
   const [customDate, setCustomDate] = useState('')
   const [customTime, setCustomTime] = useState('')
   const [hasLuggage, setHasLuggage] = useState(false)
+  const [hasHoliday, setHasHoliday] = useState(false)
   const [obs, setObs] = useState('')
   const [loading, setLoading] = useState(false)
   const [foundClient, setFoundClient] = useState(null)
@@ -49,20 +52,19 @@ export default function BookingModal({ onClose }) {
     return h >= 22 || h < 6
   })()
 
-  const fixedDest = destinations.find(d => d.active && to && d.to.toLowerCase().includes(to.toLowerCase()))
+  const fixedDest = destinations.find(d => d.active && to && d.to.trim().toLowerCase() === to.trim().toLowerCase() && d.to.trim() !== '')
   const distKm = estimateDistance(from, to)
   const estimatedPrice = from && to && distKm
-    ? calcPrice({ distanceKm: distKm, isNight, hasLuggage, fixedDestTo: to })
+    ? calcPrice({ distanceKm: distKm, isNight, isHoliday: hasHoliday, hasLuggage, fixedDestTo: to })
     : null
 
-  // Lookup cliente frecuente
+  // Lookup cliente frecuente (compara teléfono normalizado)
   useEffect(() => {
     const digits = phone.replace(/\D/g, '')
     if (digits.length >= 8) {
       const c = lookupClient(phone) || null
       setFoundClient(c)
-      const bl = blacklist.find(b => b.phone === phone)
-      setBlocked(!!bl)
+      setBlocked(isPhoneBlocked(phone))
       if (c && !name) setName(c.name)
     } else {
       setFoundClient(null)
@@ -86,7 +88,7 @@ export default function BookingModal({ onClose }) {
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div onClick={e => e.stopPropagation()} style={{ ...glass, borderRadius: 24, width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', fontFamily: 'Inter, system-ui, sans-serif', boxShadow: '0 32px 64px rgba(0,0,0,0.6)' }}>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Reservar remis" style={{ ...glass, borderRadius: 24, width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', fontFamily: 'Inter, system-ui, sans-serif', boxShadow: '0 32px 64px rgba(0,0,0,0.6)' }}>
 
         {/* HEADER */}
         <div style={{ padding: '24px 24px 0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -148,8 +150,9 @@ export default function BookingModal({ onClose }) {
             )}
 
             {/* Opciones */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
               <Toggle checked={hasLuggage} onChange={setHasLuggage} label="🧳 Equipaje" />
+              <Toggle checked={hasHoliday} onChange={setHasHoliday} label="🎉 Feriado" />
             </div>
 
             <Btn disabled={!from || !to} onClick={() => setStep(2)}>Continuar →</Btn>

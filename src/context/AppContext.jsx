@@ -11,8 +11,21 @@ const load = (key, fallback) => {
   }
 }
 const save = (key, value) => {
-  try { localStorage.setItem(LS + key, JSON.stringify(value)) } catch {}
+  try {
+    localStorage.setItem(LS + key, JSON.stringify(value))
+  } catch (e) {
+    // Cuota llena o storage deshabilitado: avisar en consola (ROB-3)
+    console.warn(`No se pudo guardar "${key}" en localStorage:`, e?.name || e)
+  }
 }
+
+// Normaliza teléfonos a solo dígitos para comparar sin importar el formato (SEC-3)
+const onlyDigits = (p) => String(p || '').replace(/\D/g, '')
+
+// Escapa HTML para evitar XSS al inyectar datos en strings de Leaflet (SEC-2)
+export const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
+  { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+))
 
 const AppContext = createContext(null)
 
@@ -88,12 +101,14 @@ const buildClients = (trips) => {
   const map = {}
   trips.forEach(t => {
     if (!t.phone) return
-    if (!map[t.phone]) {
-      map[t.phone] = { phone: t.phone, name: t.customer, trips: 0, spent: 0, lastTrip: t.date, label: 'Nuevo', blacklisted: false }
+    const key = onlyDigits(t.phone)
+    if (!key) return
+    if (!map[key]) {
+      map[key] = { phone: t.phone, phoneKey: key, name: t.customer, trips: 0, spent: 0, lastTrip: t.date, label: 'Nuevo', blacklisted: false }
     }
-    map[t.phone].trips += 1
-    if (t.status === 'completado') map[t.phone].spent += t.price
-    if (t.date > map[t.phone].lastTrip) map[t.phone].lastTrip = t.date
+    map[key].trips += 1
+    if (t.status === 'completado') map[key].spent += t.price
+    if (t.date > map[key].lastTrip) map[key].lastTrip = t.date
   })
   return Object.values(map).map(c => ({
     ...c,
@@ -164,8 +179,9 @@ export function AppProvider({ children }) {
 
   // ── PRICE CALC (Módulo 1 / 13) ──
   const calcPrice = ({ distanceKm, isNight = false, isHoliday = false, hasLuggage = false, fixedDestTo = null }) => {
-    // Check fixed destination first
-    const fixed = destinations.find(d => d.active && d.to.toLowerCase().includes((fixedDestTo || '').toLowerCase()) && fixedDestTo)
+    // Check fixed destination first — match EXACTO para no dar falsos positivos (BIZ-4)
+    const target = (fixedDestTo || '').trim().toLowerCase()
+    const fixed = target ? destinations.find(d => d.active && d.to.trim().toLowerCase() === target) : null
     if (fixed) return fixed.price
 
     let price = Math.max(tariffs.tarifaMinima, distanceKm * (distanceKm > tariffs.radioUrbanoKm ? tariffs.tarifaInterurbana : tariffs.precioPorKm))
@@ -208,7 +224,23 @@ export function AppProvider({ children }) {
   }
 
   const updateTripStatus = (id, status) => {
+    const trip = trips.find(t => t.id === id)
     setTrips(prev => prev.map(t => t.id === id ? { ...t, status } : t))
+
+    // Al cerrar el viaje, liberar al chofer (BIZ-1) y actualizar sus métricas (BIZ-2)
+    if ((status === 'completado' || status === 'cancelado') && trip?.driver) {
+      setDrivers(prev => prev.map(d => {
+        if (d.name !== trip.driver) return d
+        const freed = { ...d, status: 'disponible' }
+        if (status === 'completado') {
+          freed.trips      = (d.trips || 0) + 1
+          freed.monthTrips = (d.monthTrips || 0) + 1
+          freed.income     = (d.income || 0) + (trip.price || 0)
+        }
+        return freed
+      }))
+    }
+
     log('Estado viaje', `${id} → ${TRIP_STATES[status]?.label || status}`)
   }
 
@@ -259,11 +291,13 @@ export function AppProvider({ children }) {
   // ── CLIENTS ──
   const clients = buildClients(trips)
   const blockClient = (phone, reason) => {
-    setBlacklist(prev => [...prev, { phone, reason, date: new Date().toISOString() }])
+    setBlacklist(prev => [...prev, { phone, phoneKey: onlyDigits(phone), reason, date: new Date().toISOString() }])
     log('Clientes', `Número bloqueado: ${phone}`)
   }
-  const unblockClient = (phone) => setBlacklist(prev => prev.filter(b => b.phone !== phone))
-  const lookupClient = (phone) => clients.find(c => c.phone === phone)
+  const unblockClient = (phone) => setBlacklist(prev => prev.filter(b => (b.phoneKey || onlyDigits(b.phone)) !== onlyDigits(phone)))
+  const lookupClient = (phone) => clients.find(c => c.phoneKey === onlyDigits(phone))
+  // Comparación robusta para la lista negra (ignora formato del teléfono) — SEC-3
+  const isPhoneBlocked = (phone) => blacklist.some(b => (b.phoneKey || onlyDigits(b.phone)) === onlyDigits(phone))
 
   // ── STATS ──
   const today = new Date().toISOString().split('T')[0]
@@ -293,7 +327,7 @@ export function AppProvider({ children }) {
       tariffs, updateTariffs, calcPrice,
       destinations, addDestination, updateDestination, removeDestination,
       expenses, addExpense, removeExpense, EXPENSE_CATS,
-      clients, blacklist, blockClient, unblockClient, lookupClient,
+      clients, blacklist, blockClient, unblockClient, lookupClient, isPhoneBlocked,
       auditLog,
       stats,
       TRIP_STATES,

@@ -9,8 +9,18 @@ export default function DriverLogin() {
   const [pin, setPin]       = useState('')
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
+  const [attempts, setAttempts] = useState(0)
+  const [lockUntil, setLockUntil] = useState(0)
+
+  const MAX_ATTEMPTS = 5
+  const LOCK_MS = 30000
 
   const handleDigit = (d) => {
+    if (Date.now() < lockUntil) {
+      const secs = Math.ceil((lockUntil - Date.now()) / 1000)
+      setError(`Demasiados intentos. Esperá ${secs} segundos.`)
+      return
+    }
     if (pin.length >= 4) return
     const next = pin + d
     setPin(next)
@@ -20,10 +30,18 @@ export default function DriverLogin() {
       setTimeout(() => {
         const driver = drivers.find(dr => dr.pin === next)
         if (driver) {
+          setAttempts(0)
           setDriverSession(driver)
           navigate('/chofer')
         } else {
-          setError('PIN incorrecto. Intentá de nuevo.')
+          const n = attempts + 1
+          setAttempts(n)
+          if (n >= MAX_ATTEMPTS) {
+            setLockUntil(Date.now() + LOCK_MS)
+            setError('Demasiados intentos fallidos. Esperá 30 segundos.')
+          } else {
+            setError(`PIN incorrecto (${n}/${MAX_ATTEMPTS}). Intentá de nuevo.`)
+          }
           setPin('')
         }
         setLoading(false)
@@ -85,10 +103,12 @@ export default function DriverLogin() {
           )}
         </div>
 
-        {/* Hint (solo dev) */}
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.15)' }}>
-          {drivers.slice(0, 3).map(d => `${d.name.split(' ')[0]}: PIN ${d.pin}`).join('  ·  ')}
-        </div>
+        {/* Hint de PINs: SOLO en desarrollo, nunca en producción (SEC-1) */}
+        {import.meta.env.DEV && (
+          <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.15)' }}>
+            {drivers.slice(0, 3).map(d => `${d.name.split(' ')[0]}: PIN ${d.pin}`).join('  ·  ')}
+          </div>
+        )}
 
         <button onClick={() => navigate('/')} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
           ← Volver al inicio

@@ -145,6 +145,9 @@ function Toggle({ label, desc, checked, onChange, danger }) {
       </div>
       <button
         onClick={() => onChange(!checked)}
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
         style={{
           width: 46, height: 25, borderRadius: 999, flexShrink: 0,
           background: checked ? (danger ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.7)') : 'rgba(255,255,255,0.08)',

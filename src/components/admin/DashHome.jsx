@@ -9,13 +9,14 @@ export default function DashHome() {
   const navigate = useNavigate()
 
   const recentTrips = trips.slice(0, 5)
+  const todayLabel = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Dashboard</h1>
-          <p className={styles.subtitle}>Domingo 15 de Junio, 2026</p>
+          <p className={styles.subtitle} style={{ textTransform: 'capitalize' }}>{todayLabel}</p>
         </div>
         <div className={styles.liveBadge}>
           <span className={styles.liveDot} /> En vivo

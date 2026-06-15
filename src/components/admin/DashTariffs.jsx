@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
+import useModalA11y from '../../hooks/useModalA11y'
 
 const g = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 22 }
 
@@ -9,6 +10,7 @@ export default function DashTariffs() {
   const [saved, setSaved] = useState(false)
   const [newDest, setNewDest] = useState({ from: 'Daireaux', to: '', distance: '', price: '', returnPrice: '', time: '' })
   const [showDestForm, setShowDestForm] = useState(false)
+  useModalA11y(() => setShowDestForm(false), showDestForm)
   const fmt = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
   const save = () => {
@@ -51,7 +53,7 @@ export default function DashTariffs() {
                   <label style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.55)' }}>{f.label}</label>
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{f.desc}</span>
                 </div>
-                <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: Number(e.target.value) }))}
+                <input type={f.type} min="0" value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: Math.max(0, Number(e.target.value)) }))}
                   style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 13px', color: '#fff', fontSize: 14, fontFamily: 'inherit', outline: 'none', width: '100%' }} />
               </div>
             ))}
@@ -124,7 +126,7 @@ export default function DashTariffs() {
       {/* MODAL NUEVO DESTINO */}
       {showDestForm && (
         <div onClick={() => setShowDestForm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: 24 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(12,14,22,0.97)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 12, fontFamily: 'inherit' }}>
+          <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Nuevo destino fijo" style={{ background: 'rgba(12,14,22,0.97)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 12, fontFamily: 'inherit' }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0 }}>Nuevo destino fijo</h3>
             {[
               { l: 'Origen', k: 'from', ph: 'Ej: Daireaux' },
@@ -136,7 +138,7 @@ export default function DashTariffs() {
             ].map(f => (
               <div key={f.k}>
                 <div style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 5 }}>{f.l}</div>
-                <input type={f.num ? 'number' : 'text'} placeholder={f.ph} value={newDest[f.k]} onChange={e => setNewDest(p => ({ ...p, [f.k]: f.num ? Number(e.target.value) : e.target.value }))}
+                <input type={f.num ? 'number' : 'text'} min={f.num ? '0' : undefined} placeholder={f.ph} value={newDest[f.k]} onChange={e => setNewDest(p => ({ ...p, [f.k]: f.num ? Math.max(0, Number(e.target.value)) : e.target.value }))}
                   style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 13px', color: '#fff', fontSize: 13.5, fontFamily: 'inherit', outline: 'none', width: '100%' }} />
               </div>
             ))}
