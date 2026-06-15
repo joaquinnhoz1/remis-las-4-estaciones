@@ -59,7 +59,7 @@ export default function DashFinances() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
         {/* GASTOS POR CATEGORÍA */}
         <div style={g}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 18 }}>Gastos por categoría</h2>

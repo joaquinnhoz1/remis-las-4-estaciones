@@ -5,29 +5,31 @@
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* SIDEBAR */
+/* ── SIDEBAR ─────────────────────────────────────────────── */
 .sidebar {
-  background: rgba(12, 14, 22, 0.95);
+  background: rgba(12, 14, 22, 0.98);
   border-right: 1px solid rgba(255,255,255,0.07);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, transform 0.3s ease;
   position: fixed;
   top: 0; left: 0;
   height: 100vh;
-  z-index: 50;
+  z-index: 200;
   overflow: hidden;
 }
 
-.open  { width: 260px; }
-.closed{ width: 64px;  }
+.open   { width: 260px; }
+.closed { width: 64px;  }
 
+/* ── SIDEBAR HEADER ──────────────────────────────────────── */
 .sidebarHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 16px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
 }
 
 .logo {
@@ -67,9 +69,11 @@
 }
 .toggleBtn:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
 
+/* ── SIDEBAR META ────────────────────────────────────────── */
 .sidebarMeta {
   padding: 16px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
 }
 
 .adminBadge { display: flex; align-items: center; gap: 10px; }
@@ -86,7 +90,7 @@
 .adminName { font-size: 13px; font-weight: 600; color: #fff; }
 .adminRole { font-size: 11px; color: rgba(255,255,255,0.3); }
 
-/* NAV */
+/* ── NAV ─────────────────────────────────────────────────── */
 .nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 
 .navItem {
@@ -108,7 +112,7 @@
 .navIcon { font-size: 17px; flex-shrink: 0; }
 .navLabel { font-size: 13.5px; }
 
-/* LIVE STATUS */
+/* ── LIVE STATUS ─────────────────────────────────────────── */
 .sidebarLive {
   margin: 12px;
   background: rgba(255,255,255,0.03);
@@ -116,6 +120,7 @@
   border-radius: 12px;
   padding: 14px;
   display: flex; flex-direction: column; gap: 10px;
+  flex-shrink: 0;
 }
 
 .liveTitle {
@@ -128,7 +133,7 @@
   font-size: 12.5px; color: rgba(255,255,255,0.45);
 }
 
-.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot    { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .green  { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
 .yellow { background: #facc15; box-shadow: 0 0 6px #facc15; }
 .red    { background: #f87171; box-shadow: 0 0 6px #f87171; }
@@ -141,53 +146,131 @@
   transition: all 0.2s; white-space: nowrap;
   border-left: none; border-right: none; border-bottom: none;
   cursor: pointer; font-family: inherit;
+  flex-shrink: 0;
 }
 .logoutBtn:hover { color: #f87171; background: rgba(248,113,113,0.05); }
 
-/* MAIN */
+/* ── OVERLAY (mobile) ────────────────────────────────────── */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 150;
+  backdrop-filter: blur(2px);
+}
+
+/* ── MAIN ────────────────────────────────────────────────── */
 .main {
-  flex: 1; display: flex; flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   transition: margin-left 0.3s ease;
   margin-left: 260px;
+  min-width: 0;
 }
 
-.mainCollapsed {
-  margin-left: 64px;
-}
+.mainCollapsed { margin-left: 64px; }
 
+/* ── TOPBAR ──────────────────────────────────────────────── */
 .topbar {
-  background: rgba(12, 14, 22, 0.90);
+  background: rgba(12, 14, 22, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
-  padding: 0 32px; height: 60px;
+  padding: 0 24px; height: 56px;
   display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 40;
+  position: sticky; top: 0; z-index: 100;
+  gap: 12px;
 }
 
-.topbarLeft { display: flex; align-items: center; gap: 16px; }
+.topbarLeft  { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.topbarRight { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 .menuBtn {
-  background: transparent; color: rgba(255,255,255,0.4);
-  font-size: 20px; padding: 4px; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.7);
+  font-size: 18px;
+  width: 36px; height: 36px;
+  border-radius: 9px;
   display: none;
+  align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
 }
 
-.breadcrumb { font-size: 13px; color: rgba(255,255,255,0.25); }
-.topbarRight { display: flex; align-items: center; gap: 12px; }
+.breadcrumb {
+  font-size: 13px;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .homeBtn {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.09);
   color: rgba(255,255,255,0.45);
-  padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
   transition: all 0.2s; cursor: pointer; font-family: inherit;
+  white-space: nowrap;
 }
 .homeBtn:hover { color: #fff; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); }
 
-.content { flex: 1; padding: 32px; overflow-y: auto; }
+/* ── CONTENT ─────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  min-width: 0;
+}
 
+/* ── MOBILE ≤ 768px ──────────────────────────────────────── */
 @media (max-width: 768px) {
-  .main { margin-left: 64px; }
-  .open { width: 240px; }
+
+  /* Sidebar se oculta fuera de pantalla por defecto */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px !important;
+    box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+  }
+
+  /* Cuando está abierto en mobile: entra desde la izquierda */
+  .sidebarMobileOpen {
+    transform: translateX(0) !important;
+  }
+
+  /* Overlay visible cuando sidebar está abierto */
+  .overlayVisible {
+    display: block;
+  }
+
+  /* Main ocupa todo el ancho — el sidebar es overlay */
+  .main         { margin-left: 0 !important; }
+  .mainCollapsed{ margin-left: 0 !important; }
+
+  /* Mostrar el botón hamburguesa */
+  .menuBtn { display: flex; }
+
+  /* Ocultar el botón toggle de colapsar sidebar (solo desktop) */
+  .toggleBtn { display: none; }
+
+  /* Topbar más compacta */
+  .topbar { padding: 0 16px; height: 52px; }
+
+  /* Ocultar botón "Portal Chofer" en mobile, dejar solo "Ver sitio" */
+  .homeBtnSecondary { display: none; }
+
+  /* Contenido con menos padding */
+  .content { padding: 16px; }
+
+  /* Breadcrumb más corto */
+  .breadcrumb { font-size: 12px; max-width: 120px; }
+}
+
+/* ── MOBILE ≤ 480px ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  .content { padding: 12px; }
+  .topbar  { padding: 0 12px; }
+  .breadcrumb { display: none; }
 }

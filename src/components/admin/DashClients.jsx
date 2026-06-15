@@ -49,7 +49,7 @@ export default function DashClients() {
               style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '9px 14px', color: '#fff', fontSize: 13.5, fontFamily: 'inherit', outline: 'none' }} />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1fr' : '1fr', gap: 18 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: selected ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr', gap: 18 }}>
             {/* LIST */}
             <div style={g}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

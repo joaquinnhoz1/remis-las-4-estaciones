@@ -138,8 +138,20 @@
 
 @media (max-width: 1200px) {
   .statsGrid { grid-template-columns: 1fr 1fr; }
-  .statLarge { grid-column: span 1; }
+  .statLarge { grid-column: span 1; flex-direction: column; gap: 8px; }
+  .statLarge .statValue { font-size: 28px; }
 }
 @media (max-width: 900px) {
   .grid2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .page { gap: 14px; }
+  .title { font-size: 20px; }
+  .liveBadge { padding: 5px 10px; font-size: 11px; }
+  .statsGrid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .statCard  { padding: 14px; }
+  .statValue { font-size: 22px; }
+  .statIcon  { width: 36px; height: 36px; font-size: 18px; }
+  .card { padding: 14px; }
+  .chart { height: 120px; gap: 6px; }
 }

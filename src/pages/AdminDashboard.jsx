@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, Routes, Route, NavLink } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import DashHome          from '../components/admin/DashHome'
 import DashTrips         from '../components/admin/DashTrips'
@@ -34,22 +34,76 @@ const navItems = [
   { path: 'configuracion',  label: 'Configuración',     icon: '⚙️' },
 ]
 
+const isMobile = () => window.innerWidth <= 768
+
 export default function AdminDashboard() {
   const { logout, stats } = useApp()
-  const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const navigate  = useNavigate()
+  const location  = useLocation()
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile())
+  const [mobile, setMobile]           = useState(isMobile())
+
+  // Detectar cambio de tamaño
+  useEffect(() => {
+    const onResize = () => {
+      const m = isMobile()
+      setMobile(m)
+      if (!m) setSidebarOpen(true)   // desktop: siempre abierto por defecto
+      else     setSidebarOpen(false)  // mobile: cerrado por defecto
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // Cerrar sidebar al navegar en mobile
+  useEffect(() => {
+    if (mobile) setSidebarOpen(false)
+  }, [location.pathname, mobile])
+
+  const toggleSidebar = () => setSidebarOpen(v => !v)
+  const closeSidebar  = () => { if (mobile) setSidebarOpen(false) }
+
+  // Clases del sidebar según contexto
+  const sidebarClass = [
+    styles.sidebar,
+    mobile ? (sidebarOpen ? styles.sidebarMobileOpen : '') : (sidebarOpen ? styles.open : styles.closed),
+  ].filter(Boolean).join(' ')
+
+  // Clase del main (solo desktop usa margin-left)
+  const mainClass = [
+    styles.main,
+    !mobile && !sidebarOpen ? styles.mainCollapsed : '',
+  ].filter(Boolean).join(' ')
+
+  // Página activa para breadcrumb
+  const activePage = navItems.find(item => {
+    if (item.path === '') return location.pathname === '/admin' || location.pathname === '/admin/'
+    return location.pathname.includes(item.path)
+  })
 
   return (
     <div className={styles.layout}>
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : styles.closed}`}>
+
+      {/* Overlay mobile */}
+      {mobile && sidebarOpen && (
+        <div className={`${styles.overlay} ${styles.overlayVisible}`} onClick={closeSidebar} />
+      )}
+
+      {/* SIDEBAR */}
+      <aside className={sidebarClass}>
         <div className={styles.sidebarHeader}>
           <div className={styles.logo}>
             <div className={styles.logoIcon}>R</div>
-            {sidebarOpen && <span className={styles.logoText}>Las 4 Estaciones</span>}
+            <span className={styles.logoText}>Las 4 Estaciones</span>
           </div>
-          <button className={styles.toggleBtn} onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? '◀' : '▶'}
-          </button>
+          {!mobile && (
+            <button className={styles.toggleBtn} onClick={toggleSidebar}>
+              {sidebarOpen ? '◀' : '▶'}
+            </button>
+          )}
+          {mobile && (
+            <button className={styles.toggleBtn} onClick={closeSidebar} style={{ fontSize: 14 }}>✕</button>
+          )}
         </div>
 
         {sidebarOpen && (
@@ -73,7 +127,7 @@ export default function AdminDashboard() {
               className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
             >
               <span className={styles.navIcon}>{item.icon}</span>
-              {sidebarOpen && <span className={styles.navLabel}>{item.label}</span>}
+              {(sidebarOpen || mobile) && <span className={styles.navLabel}>{item.label}</span>}
             </NavLink>
           ))}
         </nav>
@@ -81,27 +135,30 @@ export default function AdminDashboard() {
         {sidebarOpen && (
           <div className={styles.sidebarLive}>
             <div className={styles.liveTitle}>Estado en vivo</div>
-            <div className={styles.liveRow}><span className={`${styles.dot} ${styles.green}`} /><span>{stats.availableDrivers} choferes disponibles</span></div>
-            <div className={styles.liveRow}><span className={`${styles.dot} ${styles.yellow}`} /><span>{stats.activeTrips} viajes activos</span></div>
+            <div className={styles.liveRow}><span className={`${styles.dot} ${styles.green}`} /><span>{stats.availableDrivers} disponibles</span></div>
+            <div className={styles.liveRow}><span className={`${styles.dot} ${styles.yellow}`} /><span>{stats.activeTrips} en viaje</span></div>
             <div className={styles.liveRow}><span className={`${styles.dot} ${styles.red}`} /><span>{stats.pendingTrips} pendientes</span></div>
           </div>
         )}
 
         <button className={styles.logoutBtn} onClick={() => { logout(); navigate('/') }}>
           <span>🚪</span>
-          {sidebarOpen && <span>Cerrar sesión</span>}
+          {(sidebarOpen || mobile) && <span>Cerrar sesión</span>}
         </button>
       </aside>
 
-      <main className={`${styles.main} ${sidebarOpen ? '' : styles.mainCollapsed}`}>
+      {/* MAIN */}
+      <main className={mainClass}>
         <header className={styles.topbar}>
           <div className={styles.topbarLeft}>
-            <button className={styles.menuBtn} onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
-            <div className={styles.breadcrumb}>Panel de Administración</div>
+            <button className={styles.menuBtn} onClick={toggleSidebar}>☰</button>
+            <div className={styles.breadcrumb}>
+              {activePage ? `${activePage.icon} ${activePage.label}` : 'Admin'}
+            </div>
           </div>
           <div className={styles.topbarRight}>
-            <button className={styles.homeBtn} onClick={() => navigate('/chofer/login')} style={{ marginRight: 8 }}>🚗 Portal Chofer</button>
-            <button className={styles.homeBtn} onClick={() => navigate('/')}>🏠 Ver sitio</button>
+            <button className={`${styles.homeBtn} ${styles.homeBtnSecondary}`} onClick={() => navigate('/chofer/login')}>🚗 Chofer</button>
+            <button className={styles.homeBtn} onClick={() => navigate('/')}>🏠 Sitio</button>
           </div>
         </header>
 

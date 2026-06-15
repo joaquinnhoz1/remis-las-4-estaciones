@@ -99,6 +99,36 @@
 
 .empty { text-align: center; color: rgba(255,255,255,0.2); padding: 48px; font-size: 14px; }
 
+/* ── MOBILE ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page { gap: 14px; }
+  .title { font-size: 20px; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .search  { width: 100%; }
+
+  /* Ocultar tabla, mostrar cards */
+  .tableWrap { background: transparent; border: none; border-radius: 0; overflow: visible; }
+  .table thead { display: none; }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+
+  .row {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; margin-bottom: 10px;
+    padding: 0;
+  }
+  .row td { padding: 0; border-bottom: none; }
+  .row:hover td { background: transparent; }
+
+  /* Card interna */
+  .row td:first-child  { padding: 14px 14px 0; }
+  .row td:last-child   { padding: 0 14px 14px; }
+  .row td:not(:first-child):not(:last-child) { padding: 4px 14px 0; }
+
+  .actions { flex-wrap: wrap; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 8px; }
+  .modal   { width: 90vw; padding: 22px; }
+}
+
 /* MODAL */
 .modalOverlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.75);

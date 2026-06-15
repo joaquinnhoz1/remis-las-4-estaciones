@@ -31,7 +31,7 @@ export default function DashRanking() {
       </div>
 
       {/* TOP 3 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14 }}>
         {ranked.slice(0, 3).map((d, i) => (
           <div key={d.id} style={{ ...g, textAlign: 'center', borderColor: i === 0 ? 'rgba(250,204,21,0.25)' : i === 1 ? 'rgba(156,163,175,0.25)' : 'rgba(180,120,80,0.25)', background: i === 0 ? 'rgba(250,204,21,0.05)' : g.background }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>{MEDAL[i]}</div>
@@ -50,7 +50,8 @@ export default function DashRanking() {
       {/* RANKING COMPLETO */}
       <div style={g}>
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 18 }}>Tabla completa</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
           <thead>
             <tr>
               {['#', 'Chofer', 'Vehículo', 'Viajes mes', 'Total viajes', 'Calificación', 'Ingresos', 'Score'].map(h => (
@@ -93,6 +94,7 @@ export default function DashRanking() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* ALERTAS DE VENCIMIENTO */}
