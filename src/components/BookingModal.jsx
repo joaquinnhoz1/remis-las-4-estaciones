@@ -29,7 +29,7 @@ function estimateDistance(from, to) {
 const NOW_OPT = 'now'
 
 export default function BookingModal({ onClose }) {
-  const { addTrip, calcPrice, destinations, lookupClient, blacklist } = useApp()
+  const { addTrip, calcPrice, destinations, lookupClient, blacklist, tariffs } = useApp()
   const [step, setStep] = useState(1)
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
@@ -78,6 +78,8 @@ export default function BookingModal({ onClose }) {
       price: estimatedPrice || 0,
       distance: distKm ? `${distKm} km` : '—',
       obs: [hasLuggage && 'equipaje', obs].filter(Boolean).join(', '),
+      // Si se programó para más tarde, respetar fecha/hora elegidas (A-3)
+      ...(when === 'schedule' && customDate ? { date: customDate, time: customTime || '12:00' } : {}),
     })
     onClose()
   }
@@ -92,7 +94,7 @@ export default function BookingModal({ onClose }) {
             <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', margin: 0 }}>Reservar remis</h2>
             <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', margin: '3px 0 0' }}>Paso {step} de 3</p>
           </div>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={onClose} aria-label="Cerrar" title="Cerrar" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
             <X size={14} />
           </button>
         </div>
@@ -140,7 +142,7 @@ export default function BookingModal({ onClose }) {
                     </div>
                     <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff', letterSpacing: '-1px' }}>{fmt(estimatedPrice)}</div>
                   </div>
-                  {isNight && <span style={{ fontSize: '0.7rem', background: 'rgba(250,204,21,0.12)', border: '1px solid rgba(250,204,21,0.25)', color: '#facc15', padding: '3px 8px', borderRadius: 999 }}>🌙 +{useApp().tariffs?.recargoNocturno || 20}% nocturno</span>}
+                  {isNight && <span style={{ fontSize: '0.7rem', background: 'rgba(250,204,21,0.12)', border: '1px solid rgba(250,204,21,0.25)', color: '#facc15', padding: '3px 8px', borderRadius: 999 }}>🌙 +{tariffs?.recargoNocturno || 20}% nocturno</span>}
                 </div>
               </div>
             )}

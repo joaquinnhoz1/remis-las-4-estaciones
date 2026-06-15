@@ -23,6 +23,7 @@ export default function TrackingPage() {
   const mapRef    = useRef(null)
   const leafletRef = useRef(null)
   const driverMarkerRef = useRef(null)
+  const intervalRef = useRef(null)
 
   const trip   = trips.find(t => t.id === id)
   const driver = trip ? drivers.find(d => d.name === trip.driver) : null
@@ -66,12 +67,12 @@ export default function TrackingPage() {
         if (trip.status === 'chofer_camino') {
           let t = 0
           const target = [DAIREAUX.lat - 0.003, DAIREAUX.lng + 0.004]
-          const interval = setInterval(() => {
+          intervalRef.current = setInterval(() => {
             t = Math.min(t + 0.02, 1)
             const lat = startLat + (target[0] - startLat) * t
             const lng = startLng + (target[1] - startLng) * t
             m.setLatLng([lat + (Math.random() - 0.5) * 0.0002, lng + (Math.random() - 0.5) * 0.0002])
-            if (t >= 1) clearInterval(interval)
+            if (t >= 1) { clearInterval(intervalRef.current); intervalRef.current = null }
           }, 200)
         }
       }
@@ -80,6 +81,7 @@ export default function TrackingPage() {
     })
 
     return () => {
+      if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
       if (leafletRef.current) { leafletRef.current.remove(); leafletRef.current = null }
     }
   }, [trip?.status])
@@ -187,7 +189,7 @@ export default function TrackingPage() {
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{driver.car} · {driver.plate}</div>
                   <div style={{ fontSize: 12, color: '#facc15', marginTop: 2 }}>⭐ {driver.rating}</div>
                 </div>
-                <a href={`tel:${driver.phone}`} style={{ width: 40, height: 40, background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, textDecoration: 'none' }}>
+                <a href={`tel:${driver.phone}`} aria-label={`Llamar al chofer ${driver.name}`} title="Llamar al chofer" style={{ width: 40, height: 40, background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, textDecoration: 'none' }}>
                   📞
                 </a>
               </div>

@@ -6,14 +6,14 @@ const DAIREAUX = { lat: -36.5996, lng: -61.7517 }
 const g = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 22 }
 
 const STATUS_COLOR = {
-  disponible: '#4ade80',
-  en_viaje:   '#fb923c',
-  inactivo:   '#6b7280',
+  disponible:  '#4ade80',
+  'en viaje':  '#fb923c',
+  inactivo:    '#6b7280',
 }
 const STATUS_LABEL = {
-  disponible: 'Disponible',
-  en_viaje:   'En viaje',
-  inactivo:   'Inactivo',
+  disponible:  'Disponible',
+  'en viaje':  'En viaje',
+  inactivo:    'Inactivo',
 }
 
 // Posiciones simuladas alrededor de Daireaux
@@ -30,6 +30,7 @@ export default function DashMap() {
   const mapRef    = useRef(null)
   const leafletRef = useRef(null)
   const markersRef = useRef([])
+  const intervalRef = useRef(null)
   const [mapReady, setMapReady] = useState(false)
   const [selectedDriver, setSelectedDriver] = useState(null)
 
@@ -78,10 +79,10 @@ export default function DashMap() {
         setMapReady(true)
 
         // Pequeño jitter simulando movimiento
-        const interval = setInterval(() => {
+        intervalRef.current = setInterval(() => {
           markersRef.current.forEach((m, i) => {
             const d = drivers[i]
-            if (d?.status === 'en_viaje') {
+            if (d?.status === 'en viaje') {
               const ll = m.getLatLng()
               m.setLatLng([
                 ll.lat + (Math.random() - 0.5) * 0.0005,
@@ -90,11 +91,11 @@ export default function DashMap() {
             }
           })
         }, 3000)
-        return () => clearInterval(interval)
       })
     }
 
     return () => {
+      if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
       if (leafletRef.current) {
         leafletRef.current.remove()
         leafletRef.current = null
@@ -106,12 +107,12 @@ export default function DashMap() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', margin: 0 }}>Mapa en Vivo</h1>
           <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, marginTop: 4 }}>Posición de choferes en tiempo real · Daireaux, Buenos Aires</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {Object.entries(STATUS_LABEL).map(([k, l]) => (
             <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 9 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: STATUS_COLOR[k] }} />
@@ -122,7 +123,7 @@ export default function DashMap() {
       </div>
 
       {/* Stats rápidas */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
         {[
           { l: 'Disponibles', v: stats.availableDrivers, c: '#4ade80', icon: '🟢' },
           { l: 'En viaje',    v: stats.activeTrips,      c: '#fb923c', icon: '🚗' },
@@ -139,7 +140,7 @@ export default function DashMap() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
         {/* MAPA */}
         <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', position: 'relative', minHeight: 460 }}>
           <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

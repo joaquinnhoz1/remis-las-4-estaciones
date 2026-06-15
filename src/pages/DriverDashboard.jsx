@@ -1,6 +1,6 @@
 // Módulo 4 — Dashboard del Chofer
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 
 const DRIVER_NEXT = {
@@ -30,10 +30,7 @@ export default function DriverDashboard() {
   const navigate = useNavigate()
   const [tab, setTab] = useState('activos')
 
-  if (!driverSession) {
-    navigate('/chofer/login')
-    return null
-  }
+  if (!driverSession) return <Navigate to="/chofer/login" replace />
 
   const driver = drivers.find(d => d.id === driverSession.id) || driverSession
   const myTrips = trips.filter(t => t.driver === driver.name)
@@ -59,7 +56,7 @@ export default function DriverDashboard() {
         <div style={{ display: 'flex', gap: 8 }}>
           <select value={driver.status} onChange={e => setAvail(e.target.value)} style={{ padding: '7px 12px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 9, color: '#fff', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer' }}>
             <option value="disponible">🟢 Disponible</option>
-            <option value="en_viaje">🟡 En viaje</option>
+            <option value="en viaje">🟡 En viaje</option>
             <option value="inactivo">⚫ Inactivo</option>
           </select>
           <button onClick={logout} style={{ padding: '7px 14px', background: 'rgba(248,113,113,0.10)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 9, color: '#f87171', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -73,7 +70,7 @@ export default function DriverDashboard() {
         {/* STATS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 22 }}>
           {[
-            { l: 'Viajes hoy',    v: active.length,   c: '#60a5fa' },
+            { l: 'Viajes activos', v: active.length,   c: '#60a5fa' },
             { l: 'Este mes',      v: driver.monthTrips, c: '#4ade80' },
             { l: 'Calificación',  v: `⭐ ${driver.rating}`, c: '#facc15' },
           ].map((s, i) => (
@@ -141,7 +138,7 @@ export default function DriverDashboard() {
                           {ns.label}
                         </button>
                       ))}
-                      <a href={`tel:${trip.phone}`} style={{ padding: '12px 16px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', fontSize: 16 }}>
+                      <a href={`tel:${trip.phone}`} aria-label={`Llamar a ${trip.customer}`} title="Llamar al pasajero" style={{ padding: '12px 16px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', fontSize: 16 }}>
                         📞
                       </a>
                     </div>

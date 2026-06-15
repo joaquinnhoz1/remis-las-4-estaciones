@@ -86,7 +86,7 @@ export default function DashBackups() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
         {/* Estado del sistema */}
         <div style={g}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 16 }}>🔒 Estado del sistema</h2>

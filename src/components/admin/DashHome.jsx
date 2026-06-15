@@ -5,7 +5,7 @@ import styles from './DashHome.module.css'
 const fmt = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
 export default function DashHome() {
-  const { stats, trips, drivers } = useApp()
+  const { stats, trips, drivers, TRIP_STATES } = useApp()
   const navigate = useNavigate()
 
   const recentTrips = trips.slice(0, 5)
@@ -48,7 +48,7 @@ export default function DashHome() {
                   <div className={styles.tripRoute}>{trip.from} → {trip.to}</div>
                 </div>
                 <div className={styles.tripRight}>
-                  <StatusBadge status={trip.status} />
+                  <StatusBadge status={trip.status} states={TRIP_STATES} />
                   <div className={styles.tripPrice}>{fmt(trip.price)}</div>
                 </div>
               </div>
@@ -130,17 +130,11 @@ function StatCard({ label, value, icon, color, delta, large }) {
   )
 }
 
-function StatusBadge({ status }) {
-  const map = {
-    'completado': ['#4ade80', 'rgba(74,222,128,0.10)'],
-    'en curso':   ['#facc15', 'rgba(250,204,21,0.10)'],
-    'pendiente':  ['#fb923c', 'rgba(251,146,60,0.10)'],
-    'cancelado':  ['#f87171', 'rgba(248,113,113,0.10)'],
-  }
-  const [color, bg] = map[status] || ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.05)']
+function StatusBadge({ status, states }) {
+  const s = states?.[status] || { label: status, color: 'rgba(255,255,255,0.3)', bg: 'rgba(255,255,255,0.05)' }
   return (
-    <span style={{ color, background: bg, padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', border: `1px solid ${color}30` }}>
-      {status}
+    <span style={{ color: s.color, background: s.bg, padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', border: `1px solid ${s.color}30` }}>
+      {s.label}
     </span>
   )
 }

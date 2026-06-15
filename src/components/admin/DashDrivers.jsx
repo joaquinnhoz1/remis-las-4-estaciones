@@ -92,6 +92,8 @@ export default function DashDrivers() {
               <button
                 className={styles.deleteBtn}
                 onClick={() => setConfirmDelete(driver)}
+                aria-label={`Eliminar chofer ${driver.name}`}
+                title="Eliminar chofer"
               >
                 🗑
               </button>

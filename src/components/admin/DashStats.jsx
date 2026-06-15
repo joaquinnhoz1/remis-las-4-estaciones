@@ -102,7 +102,7 @@ export default function DashStats() {
         </ResponsiveContainer>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
         {/* VIAJES POR DÍA */}
         <div style={g}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 18 }}>🚗 Viajes por día</h2>
@@ -168,7 +168,8 @@ export default function DashStats() {
       {/* RENDIMIENTO POR CHOFER */}
       <div style={g}>
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 18 }}>👤 Rendimiento por chofer</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
           <thead>
             <tr>
               {['Chofer', 'Viajes mes', 'Total', 'Calificación', 'Ingresos generados', 'Tendencia'].map(h => (
@@ -177,7 +178,7 @@ export default function DashStats() {
             </tr>
           </thead>
           <tbody>
-            {[...useApp().drivers].sort((a, b) => b.monthTrips - a.monthTrips).map((d, i) => (
+            {[...drivers].sort((a, b) => b.monthTrips - a.monthTrips).map((d, i) => (
               <tr key={d.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <td style={{ padding: '11px 12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -202,6 +203,7 @@ export default function DashStats() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

@@ -32,7 +32,7 @@ export default function DashTariffs() {
         <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, marginTop: 4 }}>Configuración de precios — los cambios se aplican en tiempo real a nuevas reservas</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 18 }}>
         {/* CONFIGURACIÓN */}
         <div style={g}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 20 }}>⚙️ Parámetros de tarifa</h2>

@@ -79,8 +79,8 @@ export default function SuccessModal() {
             rel="noopener noreferrer"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', textDecoration: 'none' }}
           >
-            <span style={{ fontSize: '0.85rem', color: '#4ade80', fontFamily: 'monospace', fontWeight: 700 }}>
-              remis.ar/seguimiento/{bookingSuccess.id}
+            <span style={{ fontSize: '0.85rem', color: '#4ade80', fontFamily: 'monospace', fontWeight: 700, wordBreak: 'break-all' }}>
+              {(typeof window !== 'undefined' ? window.location.host : '')}/seguimiento/{bookingSuccess.id}
             </span>
             <span style={{ fontSize: 16 }}>→</span>
           </a>

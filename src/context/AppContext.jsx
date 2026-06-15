@@ -177,13 +177,18 @@ export function AppProvider({ children }) {
 
   // ── TRIPS ──
   const addTrip = (trip) => {
+    // ID basado en el máximo existente para evitar colisiones (B-4)
+    const maxNum = trips.reduce((max, t) => {
+      const n = parseInt(String(t.id).replace(/\D/g, ''), 10)
+      return Number.isFinite(n) && n > max ? n : max
+    }, 0)
     const newTrip = {
-      id: `V${String(trips.length + 1).padStart(3, '0')}`,
+      id: `V${String(maxNum + 1).padStart(3, '0')}`,
       ...trip,
       status: 'pendiente',
       driver: null,
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+      date: trip.date || new Date().toISOString().split('T')[0],
+      time: trip.time || new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
       obs: trip.obs || '',
     }
     // Auto-asignación (Módulo 6)

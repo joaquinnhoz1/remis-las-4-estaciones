@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import styles from './AdminLogin.module.css'
 
@@ -11,7 +11,7 @@ export default function AdminLogin() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  if (adminAuth) { navigate('/admin'); return null }
+  if (adminAuth) return <Navigate to="/admin" replace />
 
   const handleSubmit = async (e) => {
     e.preventDefault()

@@ -1,21 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { useNavigate, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
-import DashHome          from '../components/admin/DashHome'
-import DashTrips         from '../components/admin/DashTrips'
-import DashDrivers       from '../components/admin/DashDrivers'
-import DashFinances      from '../components/admin/DashFinances'
-import DashClients       from '../components/admin/DashClients'
-import DashTariffs       from '../components/admin/DashTariffs'
-import DashRanking       from '../components/admin/DashRanking'
-import DashAudit         from '../components/admin/DashAudit'
-import DashSettings      from '../components/admin/DashSettings'
-import DashNotifications from '../components/admin/DashNotifications'
-import DashMap           from '../components/admin/DashMap'
-import DashStats         from '../components/admin/DashStats'
-import DashBackups       from '../components/admin/DashBackups'
-import DashRoadmap       from '../components/admin/DashRoadmap'
 import styles from './AdminDashboard.module.css'
+
+// Lazy-load de módulos admin: cada uno se separa en su propio chunk
+// (Recharts, Leaflet, etc. ya no entran al bundle inicial)
+const DashHome          = lazy(() => import('../components/admin/DashHome'))
+const DashTrips         = lazy(() => import('../components/admin/DashTrips'))
+const DashDrivers       = lazy(() => import('../components/admin/DashDrivers'))
+const DashFinances      = lazy(() => import('../components/admin/DashFinances'))
+const DashClients       = lazy(() => import('../components/admin/DashClients'))
+const DashTariffs       = lazy(() => import('../components/admin/DashTariffs'))
+const DashRanking       = lazy(() => import('../components/admin/DashRanking'))
+const DashAudit         = lazy(() => import('../components/admin/DashAudit'))
+const DashSettings      = lazy(() => import('../components/admin/DashSettings'))
+const DashNotifications = lazy(() => import('../components/admin/DashNotifications'))
+const DashMap           = lazy(() => import('../components/admin/DashMap'))
+const DashStats         = lazy(() => import('../components/admin/DashStats'))
+const DashBackups       = lazy(() => import('../components/admin/DashBackups'))
+const DashRoadmap       = lazy(() => import('../components/admin/DashRoadmap'))
 
 const navItems = [
   { path: '',               label: 'Dashboard',        icon: '⊞' },
@@ -163,6 +166,7 @@ export default function AdminDashboard() {
         </header>
 
         <div className={styles.content}>
+          <Suspense fallback={<div style={{ padding: 40, textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>Cargando…</div>}>
           <Routes>
             <Route path=""               element={<DashHome />} />
             <Route path="viajes"         element={<DashTrips />} />
@@ -179,6 +183,7 @@ export default function AdminDashboard() {
             <Route path="roadmap"        element={<DashRoadmap />} />
             <Route path="configuracion"  element={<DashSettings />} />
           </Routes>
+          </Suspense>
         </div>
       </main>
     </div>
